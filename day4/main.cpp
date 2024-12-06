@@ -40,105 +40,105 @@ vector<Coord> findX(vector<vector<char>> d) {
     return v_out;
 }
 
-bool north(Coord c, vector<vector<char>> grid) {
+int north(Coord c, vector<vector<char>> grid) {
     if (c.row<3) {
-        return false;
+        return 0;
     }
     if (grid[c.row][c.col]=='X' && grid[c.row-1][c.col]=='M' && grid[c.row-2][c.col]=='A' && grid[c.row-3][c.col]=='S') {
-        return true;
+        return 1;
     }
-    return false;
+    return 0;
 }
 
-bool north_east(Coord c, vector<vector<char>> grid) {
-    if (c.row<3 || c.col>grid[0].size()-3) {
-        return false;
+int north_east(Coord c, vector<vector<char>> grid) {
+    if (c.row<3 || c.col>grid[0].size()-4) {
+        return 0;
     }
-    if (grid[c.row][c.col]=='X' && grid[c.row-1][c.col+1]=='M' && grid[c.row-2][c.col+2]=='A' && grid[c.row+3][c.col+3]=='S') {
-        return true;
+    if (grid[c.row][c.col]=='X' && grid[c.row-1][c.col+1]=='M' && grid[c.row-2][c.col+2]=='A' && grid[c.row-3][c.col+3]=='S') {
+        return 1;
     }
-    return false;
+    return 0;
 }
 
-bool east(Coord c, vector<vector<char>> grid) {
-    if (c.col>grid[0].size()-3) {
-        return false;
+int east(Coord c, vector<vector<char>> grid) {
+    if (c.col>grid[0].size()-4) {
+        return 0;
     }
     if (grid[c.row][c.col]=='X' && grid[c.row][c.col+1]=='M' && grid[c.row][c.col+2]=='A' && grid[c.row][c.col+3]=='S') {
-        return true;
+        return 1;
     }
-    return false;
+    return 0;
 }
 
-bool south_east(Coord c, vector<vector<char>> grid) {
-    if (c.row>grid.size()-3 || c.col>grid[0].size()-3) {
-        return false;
+int south_east(Coord c, vector<vector<char>> grid) {
+    if (c.row>grid.size()-4 || c.col>grid[0].size()-4) {
+        return 0;
     }
     if (grid[c.row][c.col]=='X' && grid[c.row+1][c.col+1]=='M' && grid[c.row+2][c.col+2]=='A' && grid[c.row+3][c.col+3]=='S') {
-        return true;
+        return 1;
     }
-    return false;
+    return 0;
 }
 
-bool south(Coord c, vector<vector<char>> grid) {
-    if (c.row>grid.size()-3) {
-        return false;
+int south(Coord c, vector<vector<char>> grid) {
+    if (c.row>grid.size()-4) {
+        return 0;
     }
     if (grid[c.row][c.col]=='X' && grid[c.row+1][c.col]=='M' && grid[c.row+2][c.col]=='A' && grid[c.row+3][c.col]=='S') {
-        return true;
+        return 1;
     }
-    return false;
+    return 0;
 }
 
-bool south_west(Coord c, vector<vector<char>> grid) {
-    if (c.row>grid.size()-3 || c.col<3) {
-        return false;
+int south_west(Coord c, vector<vector<char>> grid) {
+    if (c.row>grid.size()-4 || c.col<3) {
+        return 0;
     }
     if (grid[c.row][c.col]=='X' && grid[c.row+1][c.col-1]=='M' && grid[c.row+2][c.col-2]=='A' && grid[c.row+3][c.col-3]=='S') {
-        return true;
+        return 1;
     }
-    return false;
+    return 0;
 }
 
-
-bool west(Coord c, vector<vector<char>> grid) {
-    if (c.col < 3) {
-        return false;
+int west(Coord c, vector<vector<char>> grid) {
+    if (c.col<3) {
+        return 0;
     }
     if (grid[c.row][c.col]=='X' && grid[c.row][c.col-1]=='M' && grid[c.row][c.col-2]=='A' && grid[c.row][c.col-3]=='S') {
-        return true;
+        return 1;
     }
-    return false;
+    return 0;
 }
 
-bool north_west(Coord c, vector<vector<char>> grid) {
+int north_west(Coord c, vector<vector<char>> grid) {
     if (c.row < 3 || c.col<3) {
-        return false;
+        return 0;
     }
     if (grid[c.row][c.col]=='X' && grid[c.row-1][c.col-1]=='M' && grid[c.row-2][c.col-2]=='A' && grid[c.row-3][c.col-3]=='S') {
-        return true;
+        return 1;
     }
-    return false;
+    return 0;
 }
 
-void part1(vector<vector<char>> grid) { 
+int part1(vector<vector<char>> grid) { 
     vector<Coord> xs = findX(grid);
     int s = 0;
     for (Coord c : xs) {
-        // bool n = north(c, grid);
-        bool ne = north_east(c, grid);
-        // bool e = east(c, grid);
-        // bool se = south_east(c, grid);
-        // bool s = south(c, grid);
-        // bool sw = south_west(c, grid);
-        // bool w = west(c, grid);
-        // bool nw = north_west(c, grid);
+        s += (
+            north(c, grid) +
+            north_east(c, grid) +
+            east(c, grid) +
+            south_east(c, grid) +
+            south(c, grid) +
+            south_west(c, grid) +
+            west(c, grid) +
+            north_west(c, grid)
+        );
     }
-
+    return s;
 }
 
 int main() {
-    vector<vector<char>> d = parse_data("test_data.txt");
-    part1(d);
-
+    vector<vector<char>> d = parse_data("data.txt");
+    cout << part1(d) << endl;
 }
