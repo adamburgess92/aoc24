@@ -2,6 +2,9 @@
 #include <fstream> 
 #include <string> 
 #include <vector>
+#include <algorithm>
+#include <functional>
+#include <stdexcept>
 
 using namespace std;
 
@@ -27,11 +30,11 @@ public:
     Coord(int row, int col) : row(row), col(col) {};
 };
 
-vector<Coord> findX(vector<vector<char>> d) {
+vector<Coord> findChar(vector<vector<char>> d, char ch) {
     vector<Coord> v_out;
     for (int row=0; row<d.size(); ++row) {
         for (int col=0; col<d[0].size(); ++col) {
-            if (d[row][col]=='X') {
+            if (d[row][col]==ch) {
                 Coord c(row, col);
                 v_out.push_back(c);
             }
@@ -40,105 +43,112 @@ vector<Coord> findX(vector<vector<char>> d) {
     return v_out;
 }
 
-int north(Coord c, vector<vector<char>> grid) {
-    if (c.row<3) {
-        return 0;
-    }
-    if (grid[c.row][c.col]=='X' && grid[c.row-1][c.col]=='M' && grid[c.row-2][c.col]=='A' && grid[c.row-3][c.col]=='S') {
-        return 1;
-    }
-    return 0;
+bool n(Coord c, vector<vector<char>> grid) {
+    return grid.at(c.row).at(c.col)=='X' && grid.at(c.row-1).at(c.col)=='M' && grid.at(c.row-2).at(c.col)=='A' && grid.at(c.row-3).at(c.col)=='S';
 }
-
-int north_east(Coord c, vector<vector<char>> grid) {
-    if (c.row<3 || c.col>grid[0].size()-4) {
-        return 0;
-    }
-    if (grid[c.row][c.col]=='X' && grid[c.row-1][c.col+1]=='M' && grid[c.row-2][c.col+2]=='A' && grid[c.row-3][c.col+3]=='S') {
-        return 1;
-    }
-    return 0;
+bool ne(Coord c, vector<vector<char>> grid) {
+    return grid.at(c.row).at(c.col)=='X' && grid.at(c.row-1).at(c.col+1)=='M' && grid.at(c.row-2).at(c.col+2)=='A' && grid.at(c.row-3).at(c.col+3)=='S';
 }
-
-int east(Coord c, vector<vector<char>> grid) {
-    if (c.col>grid[0].size()-4) {
-        return 0;
-    }
-    if (grid[c.row][c.col]=='X' && grid[c.row][c.col+1]=='M' && grid[c.row][c.col+2]=='A' && grid[c.row][c.col+3]=='S') {
-        return 1;
-    }
-    return 0;
+bool e(Coord c, vector<vector<char>> grid) {
+    return grid.at(c.row).at(c.col)=='X' && grid.at(c.row).at(c.col+1)=='M' && grid.at(c.row).at(c.col+2)=='A' && grid.at(c.row).at(c.col+3)=='S';
 }
-
-int south_east(Coord c, vector<vector<char>> grid) {
-    if (c.row>grid.size()-4 || c.col>grid[0].size()-4) {
-        return 0;
-    }
-    if (grid[c.row][c.col]=='X' && grid[c.row+1][c.col+1]=='M' && grid[c.row+2][c.col+2]=='A' && grid[c.row+3][c.col+3]=='S') {
-        return 1;
-    }
-    return 0;
+bool se(Coord c, vector<vector<char>> grid) {
+    return grid.at(c.row).at(c.col)=='X' && grid.at(c.row+1).at(c.col+1)=='M' && grid.at(c.row+2).at(c.col+2)=='A' && grid.at(c.row+3).at(c.col+3)=='S';
 }
-
-int south(Coord c, vector<vector<char>> grid) {
-    if (c.row>grid.size()-4) {
-        return 0;
-    }
-    if (grid[c.row][c.col]=='X' && grid[c.row+1][c.col]=='M' && grid[c.row+2][c.col]=='A' && grid[c.row+3][c.col]=='S') {
-        return 1;
-    }
-    return 0;
+bool s(Coord c, vector<vector<char>> grid) {
+    return grid.at(c.row).at(c.col)=='X' && grid.at(c.row+1).at(c.col)=='M' && grid.at(c.row+2).at(c.col)=='A' && grid.at(c.row+3).at(c.col)=='S';
 }
-
-int south_west(Coord c, vector<vector<char>> grid) {
-    if (c.row>grid.size()-4 || c.col<3) {
-        return 0;
-    }
-    if (grid[c.row][c.col]=='X' && grid[c.row+1][c.col-1]=='M' && grid[c.row+2][c.col-2]=='A' && grid[c.row+3][c.col-3]=='S') {
-        return 1;
-    }
-    return 0;
+bool sw(Coord c, vector<vector<char>> grid) {
+    return grid.at(c.row).at(c.col)=='X' && grid.at(c.row+1).at(c.col-1)=='M' && grid.at(c.row+2).at(c.col-2)=='A' && grid.at(c.row+3).at(c.col-3)=='S';
 }
-
-int west(Coord c, vector<vector<char>> grid) {
-    if (c.col<3) {
-        return 0;
-    }
-    if (grid[c.row][c.col]=='X' && grid[c.row][c.col-1]=='M' && grid[c.row][c.col-2]=='A' && grid[c.row][c.col-3]=='S') {
-        return 1;
-    }
-    return 0;
+bool w(Coord c, vector<vector<char>> grid) {
+    return grid.at(c.row).at(c.col)=='X' && grid.at(c.row).at(c.col-1)=='M' && grid.at(c.row).at(c.col-2)=='A' && grid.at(c.row).at(c.col-3)=='S';
 }
-
-int north_west(Coord c, vector<vector<char>> grid) {
-    if (c.row < 3 || c.col<3) {
+bool nw(Coord c, vector<vector<char>> grid) {
+    return grid.at(c.row).at(c.col)=='X' && grid.at(c.row-1).at(c.col-1)=='M' && grid.at(c.row-2).at(c.col-2)=='A' && grid.at(c.row-3).at(c.col-3)=='S';
+}
+int checkDir(Coord c, vector<vector<char>> grid, function<bool(Coord, vector<vector<char>>)> f) {
+    try {
+        if (f(c, grid)) {
+            return 1;
+        }
+    } catch (const out_of_range& e) {
         return 0;
-    }
-    if (grid[c.row][c.col]=='X' && grid[c.row-1][c.col-1]=='M' && grid[c.row-2][c.col-2]=='A' && grid[c.row-3][c.col-3]=='S') {
-        return 1;
     }
     return 0;
 }
 
 int part1(vector<vector<char>> grid) { 
-    vector<Coord> xs = findX(grid);
-    int s = 0;
+    vector<Coord> xs = findChar(grid, 'X');
+    int count = 0;
     for (Coord c : xs) {
-        s += (
-            north(c, grid) +
-            north_east(c, grid) +
-            east(c, grid) +
-            south_east(c, grid) +
-            south(c, grid) +
-            south_west(c, grid) +
-            west(c, grid) +
-            north_west(c, grid)
+        count += (
+            checkDir(c, grid, n) +
+            checkDir(c, grid, ne) +
+            checkDir(c, grid, e) +
+            checkDir(c, grid, se) +
+            checkDir(c, grid, s) +
+            checkDir(c, grid, sw) +
+            checkDir(c, grid, w) +
+            checkDir(c, grid, nw)
         );
     }
-    return s;
+    return count;
+}
+
+int checkCross(Coord c, vector<vector<char>> grid) {
+    vector<char> x;
+    char ne = '\0', se = '\0', sw = '\0', nw = '\0';
+    try {
+        ne = grid.at(c.row - 1).at(c.col + 1);
+        x.push_back(ne);
+    } catch (const out_of_range& e) {
+        return 0;
+    }
+    try {
+        se = grid.at(c.row + 1).at(c.col + 1);
+        x.push_back(se);
+    } catch (const out_of_range& e) {
+        return 0;
+    }
+    try {
+        sw = grid.at(c.row + 1).at(c.col - 1);
+        x.push_back(sw);
+    } catch (const out_of_range& e) {
+        return 0;
+    }
+    try {
+        nw = grid.at(c.row - 1).at(c.col - 1);
+        x.push_back(nw);
+    } catch (const out_of_range& e) {
+        return 0;
+    }
+
+    // Check diagonal - if they match, it's invalid
+    if (ne == sw || nw == se) {
+        return 0;
+    }
+
+    // Check for 2x 'M' and 2x 'S'
+    int n_S = count(x.begin(), x.end(), 'S');
+    int n_M = count(x.begin(), x.end(), 'M');
+    if (n_S == 2 && n_M == 2) {
+        return 1;
+    }
+    return 0;
+}
+
+int part2(vector<vector<char>> grid) {
+    vector<Coord> as = findChar(grid, 'A');
+    int count = 0;
+    for (Coord c : as) {
+        count += checkCross(c, grid);
+    }
+    return count;
 }
 
 int main() {
     vector<vector<char>> d = parse_data("data.txt");
     cout << part1(d) << endl;
+    cout << part2(d) << endl;
 }
