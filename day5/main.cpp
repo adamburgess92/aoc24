@@ -52,7 +52,7 @@ int get_middle_number(vector<int> v_in) {
     return v_in[l/2];
 }
 
-void part1(vector<vector<int>> updates, multimap<int, int> rules) {
+int part1(vector<vector<int>> updates, multimap<int, int> rules) {
     vector<vector<int>> correctly_ordered_updates;
     for (int i=0; i<updates.size(); ++i) {
         bool all_ok = true;
@@ -106,11 +106,12 @@ void part1(vector<vector<int>> updates, multimap<int, int> rules) {
 }
 
 int main() {
-    vector<string> update_data = parse_data("test_update.txt");
+    vector<string> update_data = parse_data("update.txt");
     vector<vector<int>> updates = parse_updates(update_data);
 
-    vector<string> rule_data = parse_data("test_rules.txt");
+    vector<string> rule_data = parse_data("rules.txt");
     multimap<int, int> rules = parse_rules(rule_data);
 
-    part1(updates, rules);
+    int res1 = part1(updates, rules);
+    cout << res1 << endl;
 }
