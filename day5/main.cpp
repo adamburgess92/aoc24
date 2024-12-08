@@ -47,8 +47,15 @@ multimap<int, int> parse_rules(vector<string> vs) {
 
 }
 
+int get_middle_number(vector<int> v_in) {
+    int l = v_in.size();
+    return v_in[l/2];
+}
+
 void part1(vector<vector<int>> updates, multimap<int, int> rules) {
+    vector<vector<int>> correctly_ordered_updates;
     for (int i=0; i<updates.size(); ++i) {
+        bool all_ok = true;
         for (int j=0; j<updates[i].size(); ++j) {
             bool order_correct = true;
             vector<int> before(updates[i].begin(), updates[i].begin()+j);
@@ -59,11 +66,11 @@ void part1(vector<vector<int>> updates, multimap<int, int> rules) {
             vector<int> before_rules; 
             vector<int> after_rules;
             for (const auto& [k, v] : rules) {
-                if (k==target) {
-                    after_rules.push_back(v);
-                }
                 if (v==target) {
                     before_rules.push_back(k);
+                }
+                if (k==target) {
+                    after_rules.push_back(v);
                 }
             }
             // Ensure that everything in 'before' appears int 'before_rules': 
@@ -72,7 +79,6 @@ void part1(vector<vector<int>> updates, multimap<int, int> rules) {
                 before_ok = all_of(before.begin(), before.end(), [&](int e) {
                     return find(before_rules.begin(), before_rules.end(), e) != before_rules.end();
                 });
-                cout << "before ok: " << before_ok << endl;
             }
             // And again for 'after'
             bool after_ok = true;
@@ -80,15 +86,23 @@ void part1(vector<vector<int>> updates, multimap<int, int> rules) {
                 after_ok = all_of(after.begin(), after.end(), [&](int e) {
                     return find(after_rules.begin(), after_rules.end(), e) != after_rules.end();
                 });
-                cout << "after ok: " << after_ok << endl;
             }
             if (!before_ok || !after_ok) {
-                order_correct = false;
+                all_ok = false;
             }
-            cout << "order_correct: " << order_correct << endl;
+        }
+        if (all_ok) {
+            correctly_ordered_updates.push_back(updates[i]);
         }
         cout << endl;
     }
+    int s = 0;
+    for (int i=0; i<correctly_ordered_updates.size(); ++i) {
+        int middle_number = get_middle_number(correctly_ordered_updates[i]);
+        cout << middle_number << endl;
+        s += middle_number;
+    }
+    return s;
 }
 
 int main() {
