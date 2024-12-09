@@ -116,9 +116,54 @@ int part1(vector<vector<char>> grid) {
     return unique_pairs.size()+1; // Not sure why off-by-one
 }
 
+int part2(vector<vector<char>> grid) {
+    // Guard guard = findStart(grid);
+    int n = 0;
+    for (int row=0; row<grid.size(); ++row) {
+        for (int col=0; col<grid[0].size(); ++col) {
+            Guard guard = findStart(grid);
+            if (row==guard.row && col==guard.col) {
+                continue;
+            }
+            // Place blockade:
+            char was = grid[row][col];
+            grid[row][col] = '#';
+            cout << "Blockade at: " << row << ", " << col << endl;
+            bool inLoop = false;
+            // Start moving guard
+            char next = getNext(grid, guard);
+            // cout << next << endl;
+            while (next!='f') {
+                // cout << guard.row << ", " << guard.col << endl;
+                guard.logPosition(guard.row, guard.col);
+                if (next != '#') {
+                    guard.step();
+                } else {
+                    guard.turn();
+                    guard.step();
+                }
+                next = getNext(grid, guard);
+                // Check num times visited point if have visited 
+                int n_times_visit = count(guard.visited.begin(), guard.visited.end(), pair{guard.row, guard.col});
+                // cout << n_times_visit << endl;
+                if (n_times_visit>4) {
+                    inLoop = true;
+                    break;
+                }
+            }
+            if (inLoop) {
+                n+=1;
+            }
+            // Reset blockade: 
+            grid[row][col] = was;
+        }
+    }
+    return n;
+}
+
 int main() {
     vector<vector<char>> grid = parse_data("data.txt");
-
-    int res1 = part1(grid);
-    cout << res1 << endl;
+    // int res1 = part1(grid);
+    // cout << res1 << endl;
+    cout << part2(grid) << endl;
 }
