@@ -16,6 +16,9 @@ public:
     int row;
     int col;
     Point(int row, int col) : row(row), col(col) {};
+    bool operator<(const Point& other) const { 
+        return (row < other.row) || (row==other.row && col<other.col);
+    }
 };
 
 vector<string> parse_data(const string& filename) {
@@ -54,13 +57,38 @@ map<char, vector<Point>> get_points(vector<string>& grid) {
 }
 
 void part1(vector<string> grid) {
+    // Declare boundaries: 
+    int min_row = 0;
+    int min_col = 0;
+    int max_row = grid.size()-1;
+    int max_col = grid[0].size()-1;
+    // Instantiate anotnodes
+    vector<Point> antinodes;
+    // Build map
     map<char, vector<Point>> points_map = get_points(grid);
     for (auto [k, v] : points_map) {
-        cout << k << endl;
+        // cout << k << endl;
         for (Point p: v) {
-            cout << p.row << ", " << p.col << endl;
+        // Get dx, dy to other points
+            for (Point q : v) {
+                int dx = q.col - p.col;
+                int dy = q.row - p.row;
+                // Find antinodes around point p
+                if (dx==0 && dy==0) {
+                    continue; // Probably unecessary
+                }
+                // Antinode location:
+                Point an = Point(q.row+dy, q.col+dx);
+                if (an.row>=min_row && an.row<=max_row && an.col>=min_col && an.col<=max_col) {
+                    // cout << an.row << ", " << an.col << endl;
+                    antinodes.push_back(an);
+                }
+            }
         }
     }
+    // Get distinct antinodes: 
+    set<Point> unique_antinodes(antinodes.begin(), antinodes.end());
+    cout << unique_antinodes.size() << endl;
 }
 
 int main() {
