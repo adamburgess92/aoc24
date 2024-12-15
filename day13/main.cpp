@@ -3,6 +3,7 @@
 #include <string> 
 #include <map>
 #include <vector> 
+#include <boost/multiprecision/cpp_int.hpp>
 
 using namespace std;
 
@@ -55,7 +56,6 @@ vector<map<string, int>> parse_data(const string& filename) {
 
 int part1(vector<map<string, int>>& vm) {
     int total_cost = 0;
-    cout << vm.size() << endl;
     for (map<string, int> m : vm) {
         int cost = 0;
         int p0 = m["p0"];
@@ -66,7 +66,6 @@ int part1(vector<map<string, int>>& vm) {
         int b1 = m["b1"];
 
         for (int alpha=0; alpha<100; ++alpha) {
-            cout << alpha << endl;
             for (int beta=0; beta<=100; ++beta) {
                 if (p0==alpha*a0 + beta*b0 && p1==alpha*a1 + beta*b1) {
                     cost = 3*alpha + beta;
@@ -81,8 +80,31 @@ int part1(vector<map<string, int>>& vm) {
     return total_cost;
 }
 
+boost::multiprecision::int1024_t part2(vector<map<string, int>>& vm) {
+    boost::multiprecision::int1024_t total_cost = 0;
+    for (map<string, int> m : vm) {
+        boost::multiprecision::int1024_t cost = 0;
+        boost::multiprecision::int1024_t p0 = m["p0"]+10000000000000;
+        boost::multiprecision::int1024_t p1 = m["p1"]+10000000000000;
+        boost::multiprecision::int1024_t a0 = m["a0"];
+        boost::multiprecision::int1024_t a1 = m["a1"];
+        boost::multiprecision::int1024_t b0 = m["b0"];
+        boost::multiprecision::int1024_t b1 = m["b1"];
+        boost::multiprecision::int1024_t alpha = (p1*b0 - p0*b1)/(a1*b0 - a0*b1);
+        boost::multiprecision::int1024_t beta = (p0 - alpha*a0) / b0;
+
+        if (p0==alpha*a0 + beta*b0 && p1==alpha*a1 + beta*b1) {
+            total_cost += 3*alpha + beta;
+        }
+    }
+    return total_cost;
+}
+
 int main() {
     vector<map<string, int>> d = parse_data("data.txt");
     int res1 = part1(d);
     cout << res1 << endl;
+
+    boost::multiprecision::int1024_t res2 = part2(d);
+    cout << res2 << endl;
 }
