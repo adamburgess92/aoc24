@@ -73,9 +73,10 @@ int get_score(Point p, vector<vector<int>>& grid) {
     while (q.size()>0) {
         Point curr = q.front();
         q.pop();
-        if (already_visited(curr, visited)) {
-            continue;
-        }
+        // Part 1 - uncomment this block: 
+        // if (already_visited(curr, visited)) {
+        //     continue;
+        // }
         visited.push(curr);
         int curr_row = curr.row;
         int curr_col = curr.col;
